@@ -1,0 +1,151 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Page d'accueil{% endblock %}
+
+{% block stylesheets %}
+    <link rel="stylesheet" href="{{ asset('css/styles.css') }}">
+{% endblock %}
+
+{% block body %}
+    <div class="container d-flex justify-content-center align-items-center">
+        <div class="card w-75 p-4">
+            <table class="table table-bordered table-striped table-hover">
+                <thead>
+                    <tr>
+                        <th colspan="5" class="table-title">Liste des sujets</th>
+                    </tr>
+                    <tr class="thead-dark">
+                        <th>Sujet</th>
+                        <th>Note</th>
+                        <th>Matière</th>
+                        <th>Professeur</th> 
+                    </tr>
+                </thead>
+                <tbody id="tableBody">
+                    {% for row in tableData %}
+                        <tr data-index="{{ loop.index0 }}">
+                            <td>{{ row.sujet }}</td>
+                            <td>{{ row.note }}</td>
+                            <td>{{ row.matière }}</td>
+                            <td>{{ row.professeur }}</td>
+                            <td>
+                                <span class="delete-button" data-sujet="{{ row.sujet }}" data-note="{{ row.note }}" data-matiere="{{ row.matière }}" data-professeur="{{ row.professeur }}">
+                                    🗑️
+                                </span>
+                            </td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+
+            <div class="add-button">
+                <button class="btn btn-primary" id="addButton">Ajouter</button>
+            </div>
+
+            <div id="formContainer" class="mt-4" style="display: none;">
+                <h3>Ajouter une note</h3>
+                <form id="addNoteForm">
+                    <div class="form-group">
+                        <label for="sujet">Sujet</label>
+                        <input type="text" class="form-control" id="sujet" name="sujet" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="note">Note</label>
+                        <input type="number" class="form-control" id="note" name="note" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="matiere">Matière</label>
+                        <input type="text" class="form-control" id="matiere" name="matiere" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="professeur">Professeur</label>
+                        <input type="text" class="form-control" id="professeur" name="professeur" required>
+                    </div>
+                    <button type="submit" class="btn btn-success">Ajouter</button>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    {# Script pour afficher/cacher le formulaire et gérer la suppression #}
+    <script>
+        document.getElementById('addButton').addEventListener('click', function() {
+            var formContainer = document.getElementById('formContainer');
+            formContainer.style.display = (formContainer.style.display === 'none') ? 'block' : 'none';
+        });
+
+        // Gestion de l'ajout de note
+        document.getElementById('addNoteForm').addEventListener('submit', function(event) {
+            event.preventDefault(); // Empêcher le rechargement de la page
+            var formData = new FormData(this);
+
+            // Envoyer les données avec AJAX
+            fetch('/add-note', {
+                method: 'POST',
+                body: formData
+            })
+            .then(response => response.json())
+            .then(data => {
+                // Ajouter la nouvelle note à la table
+                const tableBody = document.getElementById('tableBody');
+                const newRow = document.createElement('tr');
+                newRow.innerHTML = `
+                    <td>${data.sujet}</td>
+                    <td>${data.note}</td>
+                    <td>${data.matière}</td>
+                    <td>${data.professeur}</td>
+                    <td>
+                        <span class="delete-button" data-sujet="${data.sujet}" data-note="${data.note}" data-matière="${data.matière}" data-professeur="${data.professeur}">🗑️</span>
+                    </td>
+                `;
+                //permet de relancer la page afin de corriger le bug de supression
+                location.reload()
+                //pas besoin vu que la page reaload
+                /*tableBody.appendChild(newRow);
+                // Réinitialiser le formulaire
+                this.reset();
+                document.getElementById('formContainer').style.display = 'none';*/
+                
+            })
+            .catch(error => console.error('Erreur:', error));
+        });
+
+        // Gestion de la suppression de note
+        document.getElementById('tableBody').addEventListener('click', function(event) {
+            if (event.target.classList.contains('delete-button')) {
+                const row = event.target.closest('tr');
+                const sujet = event.target.dataset.sujet;
+                const note = event.target.dataset.note;
+                const matiere = event.target.dataset.matiere;
+                const professeur = event.target.dataset.professeur;
+
+                // Confirmer la suppression
+                if (confirm(`Êtes-vous sûr de vouloir supprimer la note de ${sujet} ?`)) {
+                    fetch('/delete-note', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                        },
+                        body: JSON.stringify({
+                            sujet: sujet,
+                            note: note,
+                            matière: matiere,
+                            professeur: professeur
+                        })
+                    })
+                    .then(response => {
+                        if (response.ok) {
+                            // Supprimer la ligne du tableau
+                            row.remove();
+                        } else {
+                            alert('Erreur lors de la suppression de la note.');
+                        }
+                    })
+                    .catch(error => console.error('Erreur:', error));
+                }
+            }
+
+        });
+        
+    </script>
+{% endblock %}

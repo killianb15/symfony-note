@@ -1,0 +1,14 @@
+[
+    {
+        "sujet": "Matrice",
+        "note": 14,
+        "mati\u00e8re": "Math\u00e9matique",
+        "professeur": "M. Dupont"
+    },
+    {
+        "sujet": "Le Voyage",
+        "note": 16,
+        "mati\u00e8re": "Culture G\u00e9n\u00e9rale",
+        "professeur": "Mme. Martin"
+    }
+]

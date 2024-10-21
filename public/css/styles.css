@@ -1,0 +1,52 @@
+/* public/css/styles.css */
+
+body {
+    background: linear-gradient(135deg, #f06, #b4e2fc);
+    min-height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-family: 'Arial', sans-serif;
+}
+
+.card {
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    border: none;
+    border-radius: 10px;
+    overflow: hidden;
+}
+
+table {
+    background-color: #ffffff;
+}
+
+.table-title {
+    text-align: center;
+    font-weight: bold;
+    font-size: 1.5rem;
+    padding: 15px;
+    border-radius: 15px;
+    background-color: #376088;
+    color: #ffffff;  /* Texte blanc */
+}
+
+.add-button {
+    margin-top: 20px;
+    text-align: center;
+}
+
+.delete-button-container {
+    margin-top: 20px;
+    display: flex;
+    justify-content: center;
+    flex-wrap: wrap;
+}
+
+.delete-button {
+    color: red;
+    cursor: pointer;
+    margin: 5px; /* Espacement entre les boutons */
+    display: inline-flex;
+    align-items: center;
+}
+ 
